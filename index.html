@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CYBER-GLITCH STUDIO</title>
+<style>
+    :root {
+        --bg: #050505;
+        --panel: #0a0f12;
+        --neon-pink: #ff007f;
+        --neon-blue: #00f0ff;
+        --neon-green: #39ff14;
+        --neon-yellow: #ffeb3b;
+        --text: #e0e0e0;
+        --muted: #556677;
+        --border: rgba(0, 240, 255, 0.3);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+        background-color: var(--bg);
+        color: var(--text);
+        font-family: "Courier New", Courier, monospace;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px;
+        overflow-x: hidden;
+    }
+
+    body::after {
+        content: "";
+        position: fixed;
+        top: 0; left: 0; width: 100vw; height: 100vh;
+        background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+        background-size: 100% 4px, 3px 100%;
+        pointer-events: none;
+        z-index: 999;
+    }
+
+    .header {
+        width: 100%;
+        max-width: 1200px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 20px;
+        border: 1px solid var(--border);
+        background: var(--panel);
+        box-shadow: 0 0 15px rgba(0, 240, 255, 0.1);
+        margin-bottom: 20px;
+        border-radius: 4px;
+        position: relative;
+        z-index: 10;
+    }
+
+    .back-btn {
+        text-decoration: none;
+        color: var(--neon-pink);
+        border: 1px solid var(--neon-pink);
+        padding: 8px 15px;
+        text-transform: uppercase;
+        font-size: 14px;
+        font-weight: bold;
+        transition: 0.3s;
+    }
+
+    .back-btn:hover {
+        background: var(--neon-pink);
+        color: #000;
+        box-shadow: 0 0 15px var(--neon-pink);
+    }
+
+    .title {
+        text-align: center;
+    }
+
+    .title h1 {
+        color: var(--neon-blue);
+        font-size: 24px;
+        letter-spacing: 2px;
+        text-shadow: 0 0 10px var(--neon-blue);
+    }
+
+    .title p { color: var(--muted); font-size: 12px; }
+
+    .main-workspace {
+        display: flex;
+        width: 100%;
+        max-width: 1200px;
+        gap: 20px;
+        flex-wrap: wrap;
+        position: relative;
+        z-index: 10;
+    }
+
+    .controls {
+        flex: 1;
+        min-width: 300px;
+        background: var(--panel);
+        border: 1px solid var(--border);
+        padding: 20px;
+        border-radius: 4px;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .control-group label {
+        display: flex;
+        justify-content: space-between;
+        color: var(--neon-blue);
+        font-size: 14px;
+        margin-bottom: 8px;
+    }
+
+    input[type="range"] {
+        width: 100%;
+        accent-color: var(--neon-pink);
+        cursor: pointer;
+    }
+
+    input[type="file"] {
+        width: 100%;
+        padding: 10px;
+        border: 1px dashed var(--neon-blue);
+        background: rgba(0, 240, 255, 0.05);
+        color: var(--text);
+        cursor: pointer;
+    }
+
+    .action-btn {
+        background: transparent;
+        color: var(--neon-green);
+        border: 1px solid var(--neon-green);
+        padding: 12px;
+        font-family: inherit;
+        font-weight: bold;
+        cursor: pointer;
+        text-transform: uppercase;
+        transition: 0.3s;
+    }
+
+    .action-btn:hover, .action-btn.active {
+        background: var(--neon-green);
+        color: #000;
+        box-shadow: 0 0 15px var(--neon-green);
+    }
+
+    .webcam-btn {
+        color: var(--neon-yellow);
+        border-color: var(--neon-yellow);
+    }
+    
+    .webcam-btn:hover, .webcam-btn.active {
+        background: var(--neon-yellow);
+        color: #000;
+        box-shadow: 0 0 15px var(--neon-yellow);
+    }
+
+    .canvas-container {
+        flex: 2;
+        min-width: 600px;
+        background: var(--panel);
+        border: 1px solid var(--border);
+        padding: 20px;
+        border-radius: 4px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        overflow: hidden;
+        min-height: 400px;
+    }
+
+    canvas {
+        max-width: 100%;
+        max-height: 70vh;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+    }
+
+    .status-bar {
+        position: absolute;
+        top: 10px; right: 10px;
+        color: var(--neon-pink);
+        font-size: 12px;
+        background: rgba(0,0,0,0.7);
+        padding: 5px 10px;
+        border: 1px solid var(--neon-pink);
+    }
+</style>
+</head>
+<body>
+
+    <header class="header">
+        <a href="../index.html" class="back-btn">⬅ Späť na portál</a>
+        <div class="title">
+            <h1>CYBER-GLITCH STUDIO</h1>
+            <p>VISUAL DATA CORRUPTION ENGINE v3.0</p>
+        </div>
+        <div style="color: var(--neon-green); font-size: 12px;">STATUS: <span id="status">WAITING FOR DATA</span></div>
+    </header>
+
+    <div class="main-workspace">
+        
+        <div class="controls">
+            <div style="color: var(--muted); font-size: 12px; border-bottom: 1px solid var(--muted); padding-bottom: 10px;">
+                // DATA_INPUT_TERMINAL
+            </div>
+
+            <button id="webcam-btn" class="action-btn webcam-btn">Pripojiť Webkameru (LIVE)</button>
+            <div style="text-align: center; color: var(--muted); font-size: 12px;">- ALEBO -</div>
+            <input type="file" id="upload" accept="image/*">
+
+            <div style="color: var(--muted); font-size: 12px; border-bottom: 1px solid var(--muted); padding-bottom: 10px; margin-top: 10px;">
+                // CORRUPTION_MODIFIERS
+            </div>
+
+            <div class="control-group">
+                <label><span>RGB SHIFT (Posun farieb)</span> <span id="rgb-val">0%</span></label>
+                <input type="range" id="rgb-shift" min="0" max="50" value="0">
+            </div>
+
+            <div class="control-group">
+                <label><span>CORRUPTION (Roztrhanie)</span> <span id="slice-val">0%</span></label>
+                <input type="range" id="slice-shift" min="0" max="50" value="0">
+            </div>
+
+            <div class="control-group">
+                <label><span>NOISE (Šum a zrnenie)</span> <span id="noise-val">0%</span></label>
+                <input type="range" id="noise-level" min="0" max="100" value="0">
+            </div>
+
+            <button id="animate-btn" class="action-btn">Auto-Glitch Animácia</button>
+            <button id="download-btn" class="action-btn" style="color: var(--neon-blue); border-color: var(--neon-blue);">Stiahnuť Výsledok</button>
+        </div>
+
+        <div class="canvas-container">
+            <div class="status-bar">OUTPUT_DISPLAY</div>
+            <canvas id="canvas"></canvas>
+            <video id="video" autoplay playsinline style="display: none;"></video>
+        </div>
+
+    </div>
+
+<script>
+    const upload = document.getElementById('upload');
+    const webcamBtn = document.getElementById('webcam-btn');
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+    const video = document.getElementById('video');
+    
+    const rgbSlider = document.getElementById('rgb-shift');
+    const sliceSlider = document.getElementById('slice-shift');
+    const noiseSlider = document.getElementById('noise-level');
+    
+    const rgbVal = document.getElementById('rgb-val');
+    const sliceVal = document.getElementById('slice-val');
+    const noiseVal = document.getElementById('noise-val');
+    
+    const animateBtn = document.getElementById('animate-btn');
+    const statusText = document.getElementById('status');
+    const downloadBtn = document.getElementById('download-btn');
+
+    let originalImg = new Image();
+    let imgLoaded = false;
+    let isAnimating = false;
+    let useWebcam = false;
+    let animationFrame;
+
+    const MAX_WIDTH = 1200;
+
+    function updateLabels() {
+        rgbVal.textContent = rgbSlider.value + '%';
+        sliceVal.textContent = sliceSlider.value + '%';
+        noiseVal.textContent = noiseSlider.value + '%';
+    }
+
+    [rgbSlider, sliceSlider, noiseSlider].forEach(slider => {
+        slider.addEventListener('input', () => {
+            updateLabels();
+            if (!isAnimating && !useWebcam) applyGlitchToStaticImage();
+        });
+    });
+
+    upload.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        
+        stopWebcam();
+        statusText.style.color = "var(--neon-blue)";
+        statusText.textContent = "PROCESSING_IMAGE...";
+        
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            originalImg.src = event.target.result;
+            originalImg.onload = () => {
+                let w = originalImg.width;
+                let h = originalImg.height;
+                if (w > MAX_WIDTH) {
+                    h = Math.floor(h * (MAX_WIDTH / w));
+                    w = MAX_WIDTH;
+                }
+                canvas.width = w;
+                canvas.height = h;
+                
+                imgLoaded = true;
+                statusText.style.color = "var(--neon-green)";
+                statusText.textContent = "SYSTEM_READY";
+                applyGlitchToStaticImage();
+            }
+        }
+        reader.readAsDataURL(file);
+    });
+
+    // 2. ВЕБ-КАМЕРА
+    webcamBtn.addEventListener('click', async () => {
+        if (!useWebcam) {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                video.srcObject = stream;
+                useWebcam = true;
+                imgLoaded = true;
+                
+                webcamBtn.textContent = 'Odpojiť Webkameru';
+                webcamBtn.classList.add('active');
+                statusText.style.color = "var(--neon-yellow)";
+                statusText.textContent = "LIVE_STREAM_ACTIVE";
+
+                video.onloadedmetadata = () => {
+                    canvas.width = video.videoWidth;
+                    canvas.height = video.videoHeight;
+                    renderLiveFrame();
+                };
+            } catch (err) {
+                alert("Chyba: Povoľte prístup ku kamere vo vašom prehliadači.");
+            }
+        } else {
+            stopWebcam();
+        }
+    });
+
+    function stopWebcam() {
+        if (!useWebcam) return;
+        const stream = video.srcObject;
+        if (stream) stream.getTracks().forEach(track => track.stop());
+        video.srcObject = null;
+        useWebcam = false;
+        
+        webcamBtn.textContent = 'Pripojiť Webkameru (LIVE)';
+        webcamBtn.classList.remove('active');
+        statusText.style.color = "var(--neon-green)";
+        statusText.textContent = "SYSTEM_READY";
+        
+        cancelAnimationFrame(animationFrame);
+        if (originalImg.src) applyGlitchToStaticImage();
+        else ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    function processGlitchCore() {
+        const rgbOffset = parseInt(rgbSlider.value) * 2;
+        const sliceIntensity = parseInt(sliceSlider.value);
+        const noiseIntensity = parseInt(noiseSlider.value);
+
+        if (rgbOffset === 0 && sliceIntensity === 0 && noiseIntensity === 0) return;
+
+        if (sliceIntensity > 0) {
+            const numSlices = Math.floor(Math.random() * sliceIntensity) + sliceIntensity;
+            for (let i = 0; i < numSlices; i++) {
+                const sliceY = Math.random() * canvas.height;
+                const sliceH = Math.random() * 30 + 5;
+                const sliceOffset = (Math.random() - 0.5) * sliceIntensity * 4;
+                const sliceData = ctx.getImageData(0, sliceY, canvas.width, sliceH);
+                ctx.putImageData(sliceData, sliceOffset, sliceY);
+            }
+        }
+
+        const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const data = imgData.data;
+
+        for (let i = 0; i < data.length; i += 4) {
+            if (rgbOffset > 0 && Math.random() > 0.5) {
+                data[i] = data[i + rgbOffset * 4] || data[i];
+                data[i + 2] = data[i - rgbOffset * 4 + 2] || data[i+2];
+            }
+            if (noiseIntensity > 0 && Math.random() < (noiseIntensity / 200)) {
+                const noise = (Math.random() - 0.5) * 100;
+                data[i] = Math.min(255, Math.max(0, data[i] + noise));
+                data[i+1] = Math.min(255, Math.max(0, data[i+1] + noise));
+                data[i+2] = Math.min(255, Math.max(0, data[i+2] + noise));
+            }
+        }
+        ctx.putImageData(imgData, 0, 0);
+        
+        if (sliceIntensity > 10) {
+            ctx.fillStyle = Math.random() > 0.5 ? 'rgba(0, 240, 255, 0.2)' : 'rgba(255, 0, 127, 0.2)';
+            ctx.fillRect(0, Math.random() * canvas.height, canvas.width, Math.random() * 20);
+        }
+    }
+
+    function applyGlitchToStaticImage() {
+        if (!imgLoaded || useWebcam) return;
+        ctx.drawImage(originalImg, 0, 0, canvas.width, canvas.height);
+        processGlitchCore();
+    }
+
+    function renderLiveFrame() {
+        if (!useWebcam) return;
+        if (video.readyState >= video.HAVE_CURRENT_DATA) {
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            processGlitchCore();
+            
+            if (isAnimating && Math.random() > 0.8) {
+                rgbSlider.value = Math.random() * 50;
+                sliceSlider.value = Math.random() * 50;
+                updateLabels();
+            }
+        }
+        animationFrame = requestAnimationFrame(renderLiveFrame);
+    }
+
+    function animateStaticImage() {
+        if (!isAnimating || useWebcam) return;
+        applyGlitchToStaticImage();
+        if(Math.random() > 0.7) {
+            rgbSlider.value = Math.random() * 50;
+            sliceSlider.value = Math.random() * 50;
+            updateLabels();
+        }
+        setTimeout(() => {
+            animationFrame = requestAnimationFrame(animateStaticImage);
+        }, 100);
+    }
+
+    animateBtn.addEventListener('click', () => {
+        if (!imgLoaded) {
+            alert('Najprv nahrajte obrázok alebo pripojte kameru!');
+            return;
+        }
+        isAnimating = !isAnimating;
+        if (isAnimating) {
+            animateBtn.textContent = 'Zastaviť Animáciu';
+            animateBtn.classList.add('active');
+            if (!useWebcam) animateStaticImage();
+        } else {
+            animateBtn.textContent = 'Auto-Glitch Animácia';
+            animateBtn.classList.remove('active');
+            if (!useWebcam) {
+                cancelAnimationFrame(animationFrame);
+                applyGlitchToStaticImage(); 
+            }
+        }
+    });
+
+    downloadBtn.addEventListener('click', () => {
+        if (!imgLoaded) return;
+        const link = document.createElement('a');
+        link.download = 'cyber_glitch_output.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+    });
+
+</script>
+</body>
+</html>
