@@ -12,6 +12,7 @@
         --neon-blue: #00f0ff;
         --neon-green: #39ff14;
         --neon-yellow: #ffeb3b;
+        --neon-orange: #ff5e00;
         --text: #e0e0e0;
         --muted: #556677;
         --border: rgba(0, 240, 255, 0.3);
@@ -35,6 +36,438 @@
         content: "";
         position: fixed;
         top: 0; left: 0; width: 100vw; height: 100vh;
+        background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+        background-size: 100% 4px, 3px 100%;
+        pointer-events: none;
+        z-index: 999;
+    }
+
+    .header {
+        width: 100%;
+        max-width: 1200px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 20px;
+        border: 1px solid var(--border);
+        background: var(--panel);
+        box-shadow: 0 0 15px rgba(0, 240, 255, 0.1);
+        margin-bottom: 20px;
+        border-radius: 4px;
+        position: relative;
+        z-index: 10;
+    }
+
+    /* Кнопка "Späť na portál" */
+    .back-btn {
+        text-decoration: none;
+        color: var(--neon-pink);
+        border: 1px solid var(--neon-pink);
+        padding: 8px 15px;
+        text-transform: uppercase;
+        font-size: 14px;
+        font-weight: bold;
+        transition: 0.3s;
+    }
+
+    .back-btn:hover {
+        background: var(--neon-pink);
+        color: #000;
+        box-shadow: 0 0 15px var(--neon-pink);
+    }
+
+    .title { text-align: center; }
+    .title h1 {
+        color: var(--neon-blue);
+        font-size: 24px;
+        letter-spacing: 2px;
+        text-shadow: 0 0 10px var(--neon-blue);
+    }
+    .title p { color: var(--muted); font-size: 12px; }
+
+    .main-workspace {
+        display: flex;
+        width: 100%;
+        max-width: 1200px;
+        gap: 20px;
+        flex-wrap: wrap;
+        position: relative;
+        z-index: 10;
+    }
+
+    .controls {
+        flex: 1;
+        min-width: 300px;
+        background: var(--panel);
+        border: 1px solid var(--border);
+        padding: 20px;
+        border-radius: 4px;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .control-group label {
+        display: flex;
+        justify-content: space-between;
+        color: var(--neon-blue);
+        font-size: 14px;
+        margin-bottom: 8px;
+    }
+
+    input[type="range"] {
+        width: 100%;
+        accent-color: var(--neon-pink);
+        cursor: pointer;
+    }
+
+    input[type="file"] {
+        width: 100%;
+        padding: 10px;
+        border: 1px dashed var(--neon-blue);
+        background: rgba(0, 240, 255, 0.05);
+        color: var(--text);
+        cursor: pointer;
+    }
+
+    .action-btn {
+        background: transparent;
+        color: var(--neon-green);
+        border: 1px solid var(--neon-green);
+        padding: 12px;
+        font-family: inherit;
+        font-weight: bold;
+        cursor: pointer;
+        text-transform: uppercase;
+        transition: 0.3s;
+    }
+
+    .action-btn:hover, .action-btn.active {
+        background: var(--neon-green);
+        color: #000;
+        box-shadow: 0 0 15px var(--neon-green);
+    }
+
+    .webcam-btn { color: var(--neon-yellow); border-color: var(--neon-yellow); }
+    .webcam-btn:hover, .webcam-btn.active { background: var(--neon-yellow); box-shadow: 0 0 15px var(--neon-yellow); color: #000; }
+
+    .audio-btn { color: var(--neon-pink); border-color: var(--neon-pink); }
+    .audio-btn:hover, .audio-btn.active { background: var(--neon-pink); box-shadow: 0 0 15px var(--neon-pink); color: #000; }
+
+    .clear-btn { color: var(--neon-orange); border-color: var(--neon-orange); margin-top: 10px; }
+    .clear-btn:hover { background: var(--neon-orange); box-shadow: 0 0 15px var(--neon-orange); color: #000; }
+
+    .canvas-container {
+        flex: 2;
+        min-width: 600px;
+        background: var(--panel);
+        border: 1px solid var(--border);
+        padding: 20px;
+        border-radius: 4px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        overflow: hidden;
+        min-height: 400px;
+    }
+
+    canvas {
+        max-width: 100%;
+        max-height: 70vh;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+    }
+
+    .status-bar {
+        position: absolute;
+        top: 10px; right: 10px;
+        color: var(--neon-pink);
+        font-size: 12px;
+        background: rgba(0,0,0,0.7);
+        padding: 5px 10px;
+        border: 1px solid var(--neon-pink);
+    }
+</style>
+</head>
+<body>
+
+    <header class="header">
+        <a href="../index.html" class="back-btn">⬅ Späť na portál</a>
+        <div class="title">
+            <h1>CYBER-GLITCH STUDIO</h1>
+            <p>VISUAL & AUDIO CORRUPTION ENGINE v4.3</p>
+        </div>
+        <div style="color: var(--neon-green); font-size: 12px;">STATUS: <span id="status">WAITING FOR DATA</span></div>
+    </header>
+
+    <div class="main-workspace">
+        <div class="controls">
+            <div style="color: var(--muted); font-size: 12px; border-bottom: 1px solid var(--muted); padding-bottom: 10px;">
+                // DATA_INPUT_TERMINAL
+            </div>
+
+            <button id="webcam-btn" class="action-btn webcam-btn">Pripojiť Webkameru (LIVE)</button>
+            <div style="text-align: center; color: var(--muted); font-size: 12px;">- ALEBO -</div>
+            <input type="file" id="upload" accept="image/*">
+
+            <div style="color: var(--muted); font-size: 12px; border-bottom: 1px solid var(--muted); padding-bottom: 10px; margin-top: 10px;">
+                // AUDIO_SYNC_MODULE
+            </div>
+            <button id="audio-react-btn" class="action-btn audio-btn">🎙 Zapnúť Audio-React (Mic)</button>
+
+            <div style="color: var(--muted); font-size: 12px; border-bottom: 1px solid var(--muted); padding-bottom: 10px; margin-top: 10px;">
+                // CORRUPTION_MODIFIERS
+            </div>
+
+            <div class="control-group">
+                <label><span>RGB SHIFT</span> <span id="rgb-val">0%</span></label>
+                <input type="range" id="rgb-shift" min="0" max="50" value="0">
+            </div>
+
+            <div class="control-group">
+                <label><span>CORRUPTION</span> <span id="slice-val">0%</span></label>
+                <input type="range" id="slice-shift" min="0" max="50" value="0">
+            </div>
+
+            <div class="control-group">
+                <label><span>NOISE</span> <span id="noise-val">0%</span></label>
+                <input type="range" id="noise-level" min="0" max="100" value="0">
+            </div>
+
+            <button id="animate-btn" class="action-btn">Auto-Glitch Animácia</button>
+            <button id="download-btn" class="action-btn" style="color: var(--neon-blue); border-color: var(--neon-blue);">Stiahnuť Výsledok</button>
+            
+            <button id="clear-btn" class="action-btn clear-btn">🗑 Vynulovať Workspace</button>
+        </div>
+
+        <div class="canvas-container">
+            <div class="status-bar">OUTPUT_DISPLAY</div>
+            <canvas id="canvas"></canvas>
+            <video id="video" autoplay playsinline style="display: none;"></video>
+        </div>
+    </div>
+
+<script>
+    const upload = document.getElementById('upload');
+    const webcamBtn = document.getElementById('webcam-btn');
+    const audioReactBtn = document.getElementById('audio-react-btn');
+    const clearBtn = document.getElementById('clear-btn');
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+    const video = document.getElementById('video');
+    
+    const rgbSlider = document.getElementById('rgb-shift');
+    const sliceSlider = document.getElementById('slice-shift');
+    const noiseSlider = document.getElementById('noise-level');
+    
+    const rgbVal = document.getElementById('rgb-val');
+    const sliceVal = document.getElementById('slice-val');
+    const noiseVal = document.getElementById('noise-val');
+    
+    const animateBtn = document.getElementById('animate-btn');
+    const statusText = document.getElementById('status');
+    const downloadBtn = document.getElementById('download-btn');
+
+    let originalImg = new Image();
+    let imgLoaded = false;
+    let isAnimating = false;
+    let useWebcam = false;
+    let animationFrame;
+
+    let audioCtx, analyser, dataArray, audioStream = null;
+    let isAudioReacting = false;
+    let audioLoop;
+
+    const MAX_WIDTH = 1200;
+
+    function updateLabels() {
+        rgbVal.textContent = Math.round(rgbSlider.value) + '%';
+        sliceVal.textContent = Math.round(sliceSlider.value) + '%';
+        noiseVal.textContent = Math.round(noiseSlider.value) + '%';
+    }
+
+    [rgbSlider, sliceSlider, noiseSlider].forEach(s => s.addEventListener('input', () => {
+        updateLabels();
+        if (!isAnimating && !useWebcam && !isAudioReacting) applyGlitchToStaticImage();
+    }));
+
+    upload.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        resetAllEffects();
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            originalImg = new Image();
+            originalImg.src = ev.target.result;
+            originalImg.onload = () => {
+                let w = originalImg.width, h = originalImg.height;
+                if (w > MAX_WIDTH) { h = Math.floor(h * (MAX_WIDTH / w)); w = MAX_WIDTH; }
+                canvas.width = w; canvas.height = h;
+                imgLoaded = true;
+                statusText.textContent = "SYSTEM_READY";
+                applyGlitchToStaticImage();
+            }
+        }
+        reader.readAsDataURL(file);
+    });
+
+    webcamBtn.addEventListener('click', async () => {
+        if (!useWebcam) {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                video.srcObject = stream;
+                useWebcam = true; imgLoaded = true;
+                webcamBtn.textContent = 'Odpojiť Webkameru';
+                webcamBtn.classList.add('active');
+                video.onloadedmetadata = () => {
+                    canvas.width = video.videoWidth; canvas.height = video.videoHeight;
+                    renderLiveFrame();
+                };
+            } catch (e) { alert("Chyba prístupu ku kamere."); }
+        } else { stopWebcam(); }
+    });
+
+    function stopWebcam() {
+        if (!useWebcam) return;
+        video.srcObject.getTracks().forEach(t => t.stop());
+        video.srcObject = null;
+        useWebcam = false;
+        webcamBtn.textContent = 'Pripojiť Webkameru (LIVE)';
+        webcamBtn.classList.remove('active');
+        cancelAnimationFrame(animationFrame);
+        if (originalImg.src) applyGlitchToStaticImage();
+    }
+
+    audioReactBtn.addEventListener('click', async () => {
+        if (!isAudioReacting) {
+            try {
+                audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                analyser = audioCtx.createAnalyser();
+                analyser.fftSize = 256;
+                audioCtx.createMediaStreamSource(audioStream).connect(analyser);
+                dataArray = new Uint8Array(analyser.frequencyBinCount);
+                isAudioReacting = true;
+                audioReactBtn.textContent = '⏹ Vypnúť Audio-React';
+                audioReactBtn.classList.add('active');
+                if (isAnimating) stopAutoAnimate();
+                runAudioLoop();
+            } catch (e) { alert("Chyba mikrofónu."); }
+        } else { stopAudio(); }
+    });
+
+    function stopAudio() {
+        isAudioReacting = false;
+        if (audioStream) audioStream.getTracks().forEach(t => t.stop());
+        if (audioCtx) audioCtx.close();
+        cancelAnimationFrame(audioLoop);
+        audioReactBtn.textContent = '🎙 Zapnúť Audio-React (Mic)';
+        audioReactBtn.classList.remove('active');
+        resetSliders();
+    }
+
+    function runAudioLoop() {
+        if (!isAudioReacting) return;
+        analyser.getByteFrequencyData(dataArray);
+        let avg = dataArray.reduce((a, b) => a + b) / dataArray.length;
+        if (avg > 5) {
+            rgbSlider.value = Math.min(50, avg * 0.8);
+            sliceSlider.value = Math.min(50, avg * 0.6);
+            noiseSlider.value = Math.min(100, avg * 1.5);
+        } else { resetSliders(); }
+        updateLabels();
+        if (!useWebcam && imgLoaded) applyGlitchToStaticImage();
+        audioLoop = requestAnimationFrame(runAudioLoop);
+    }
+
+    function processGlitch() {
+        const rgb = parseInt(rgbSlider.value) * 2;
+        const slice = parseInt(sliceSlider.value);
+        const noise = parseInt(noiseSlider.value);
+        if (rgb === 0 && slice === 0 && noise === 0) return;
+
+        if (slice > 0) {
+            for (let i = 0; i < slice + 5; i++) {
+                const sy = Math.random() * canvas.height, sh = Math.random() * 20 + 5;
+                const sx = (Math.random() - 0.5) * slice * 6;
+                const data = ctx.getImageData(0, sy, canvas.width, sh);
+                ctx.putImageData(data, sx, sy);
+            }
+        }
+
+        const idata = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const d = idata.data;
+        for (let i = 0; i < d.length; i += 4) {
+            if (rgb > 0 && Math.random() > 0.5) {
+                d[i] = d[i + rgb * 4] || d[i];
+                d[i+2] = d[i - rgb * 4 + 2] || d[i+2];
+            }
+            if (noise > 0 && Math.random() < (noise / 350)) {
+                const n = (Math.random() - 0.5) * 110;
+                d[i] += n; d[i+1] += n; d[i+2] += n;
+            }
+        }
+        ctx.putImageData(idata, 0, 0);
+    }
+
+    function applyGlitchToStaticImage() {
+        if (!imgLoaded || useWebcam) return;
+        ctx.drawImage(originalImg, 0, 0, canvas.width, canvas.height);
+        processGlitch();
+    }
+
+    function renderLiveFrame() {
+        if (!useWebcam) return;
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        processGlitch();
+        animationFrame = requestAnimationFrame(renderLiveFrame);
+    }
+
+    function resetSliders() { rgbSlider.value = 0; sliceSlider.value = 0; noiseSlider.value = 0; updateLabels(); }
+    
+    function resetAllEffects() {
+        stopWebcam(); stopAudio(); stopAutoAnimate();
+        resetSliders();
+    }
+
+    function stopAutoAnimate() {
+        isAnimating = false;
+        animateBtn.textContent = 'Auto-Glitch Animácia';
+        animateBtn.classList.remove('active');
+    }
+
+    animateBtn.addEventListener('click', () => {
+        if (!imgLoaded) return alert("Najprv nahraj dáta!");
+        if (isAudioReacting) stopAudio();
+        isAnimating = !isAnimating;
+        if (isAnimating) {
+            animateBtn.textContent = 'Zastaviť Animáciu';
+            animateBtn.classList.add('active');
+            const loop = () => {
+                if (!isAnimating) return;
+                rgbSlider.value = Math.random() * 40; sliceSlider.value = Math.random() * 30;
+                updateLabels(); if (!useWebcam) applyGlitchToStaticImage();
+                setTimeout(() => requestAnimationFrame(loop), 120);
+            };
+            loop();
+        } else { stopAutoAnimate(); resetSliders(); if (!useWebcam) applyGlitchToStaticImage(); }
+    });
+
+    clearBtn.addEventListener('click', () => {
+        resetAllEffects();
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        imgLoaded = false; originalImg = new Image(); upload.value = "";
+        statusText.textContent = "WAITING FOR DATA";
+    });
+
+    downloadBtn.addEventListener('click', () => {
+        if (!imgLoaded) return;
+        const a = document.createElement('a');
+        a.download = 'cyber_glitch.png'; a.href = canvas.toDataURL(); a.click();
+    });
+</script>
+</body>
+</html>        top: 0; left: 0; width: 100vw; height: 100vh;
         background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
         background-size: 100% 4px, 3px 100%;
         pointer-events: none;
